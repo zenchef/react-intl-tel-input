@@ -75,6 +75,7 @@ class IntlTelInput extends Component {
       showDropdown: false,
       highlightedCountry: 0,
       value: props.value || props.defaultValue,
+      previousValue: props.value || props.defaultValue,
       disabled: props.disabled,
       readonly: false,
       offsetTop: 0,
@@ -150,7 +151,7 @@ class IntlTelInput extends Component {
 
   componentDidUpdate(prevProps) {
     if (this.props.value !== prevProps.value) {
-      this.updateFlagFromNumber(this.props.value);
+      this.updateCursorWhenUpdatingValue()
     }
 
     if (
@@ -212,7 +213,7 @@ class IntlTelInput extends Component {
 
   // select the given flag, update the placeholder and the active list item
   // Note: called from setInitialState, updateFlagFromNumber, selectListItem, setCountry
-  setFlag = (countryCode, isInit) => {
+  setFlag = (countryCode, isInit, shouldUpdateNumber = true) => {
     const prevCountry =
       this.selectedCountryData && this.selectedCountryData.iso2
         ? this.selectedCountryData
@@ -279,14 +280,14 @@ class IntlTelInput extends Component {
       this.tel.focus();
     }
 
-    const newNumber = this.updateDialCode(
+    const newNumber = shouldUpdateNumber ? this.updateDialCode(
       this.selectedCountryData.dialCode,
       !isInit
-    );
+    ) : null;
 
     this.setState(
       {
-        value: newNumber,
+        ...(newNumber ? {value: newNumber} : {}),
         showDropdown: false,
         highlightedCountry: selectedIndex,
         countryCode,
@@ -773,7 +774,7 @@ class IntlTelInput extends Component {
     }
 
     if (countryCode !== null) {
-      this.setFlag(countryCode, isInit);
+      this.setFlag(countryCode, isInit, false);
     }
   };
 
@@ -1061,6 +1062,8 @@ class IntlTelInput extends Component {
       const fullNumber = this.formatFullNumber(newNumber);
       const isValid = this.isValidNumber(fullNumber);
 
+      this.setState({previousValue: newNumber});
+
       this.props.onPhoneNumberChange(
         isValid,
         newNumber,
@@ -1218,12 +1221,6 @@ class IntlTelInput extends Component {
     }
   };
 
-  handlePaste = e => {
-    if (e.clipboardData) {
-      this.updateFlagFromNumber(e.clipboardData.getData('Text'), false);
-    }
-  };
-
   changeHighlightCountry = (showDropdown, selectedIndex) => {
     this.setState({
       showDropdown,
@@ -1243,6 +1240,35 @@ class IntlTelInput extends Component {
       this.tempCountry = this.autoCountry;
       this.autoCountryDeferred.resolve();
     }
+  };
+
+
+  updateCursorWhenUpdatingValue() {
+    const value = this.props.format
+      ? this.formatNumber(this.props.value)
+      : this.props.value;
+
+    const previousValue = this.state.previousValue;
+
+    this.setState(state => {
+      let cursorPosition = state.cursorPosition;
+      const previousStringBeforeCursor =
+        previousValue === ''
+          ? previousValue
+          : previousValue.substring(0, cursorPosition);
+
+      cursorPosition = utils.getCursorPositionAfterFormating(
+        previousStringBeforeCursor,
+        previousValue,
+        value
+      );
+
+      return {
+        cursorPosition,
+      }
+    }, () => {
+      this.updateFlagFromNumber(value);
+    })
   };
 
   render() {
@@ -1290,7 +1316,6 @@ class IntlTelInput extends Component {
           refCallback={this.setTelRef}
           handleInputChange={this.handleInputChange}
           handleOnBlur={this.handleOnBlur}
-          handlePaste={this.handlePaste}
           className={inputClass}
           disabled={this.state.disabled}
           readonly={this.state.readonly}
