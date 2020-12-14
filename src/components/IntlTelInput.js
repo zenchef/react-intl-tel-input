@@ -832,6 +832,23 @@ class IntlTelInput extends Component {
     }
   };
 
+  handleOnFocus = e => {
+    if (typeof this.props.onPhoneNumberFocus === 'function') {
+      const value = this.state.value
+      const fullNumber = this.formatFullNumber(value)
+      const isValid = this.isValidNumber(fullNumber)
+
+      this.props.onPhoneNumberFocus(
+        isValid,
+        value,
+        this.selectedCountryData,
+        fullNumber,
+        this.getExtension(value),
+        e
+      )
+    }
+  }
+
   bindDocumentClick = () => {
     this.isOpening = true;
     document
@@ -1316,6 +1333,7 @@ class IntlTelInput extends Component {
           refCallback={this.setTelRef}
           handleInputChange={this.handleInputChange}
           handleOnBlur={this.handleOnBlur}
+          handleOnFocus={this.handleOnFocus}
           className={inputClass}
           disabled={this.state.disabled}
           readonly={this.state.readonly}
@@ -1390,6 +1408,8 @@ IntlTelInput.propTypes = {
   onPhoneNumberChange: PropTypes.func,
   /** Optional validation callback function. It returns validation status, input box value and selected country data. */
   onPhoneNumberBlur: PropTypes.func,
+  /** Optional validation callback function. It returns validation status, input box value and selected country data. */
+  onPhoneNumberFocus: PropTypes.func,
   /** Allow main app to do things when a country is selected. */
   onSelectFlag: PropTypes.func,
   /** Disable this component. */
