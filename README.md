@@ -1,3 +1,10 @@
+> [!WARNING]
+> **This repository is deprecated and no longer maintained.**
+> 
+> It has been superseded by [intl-tel-input](https://www.npmjs.com/package/intl-tel-input).
+> 
+> No further updates, bug fixes, or security patches will be provided.
+
 # React-Intl-Tel-Input
 
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
