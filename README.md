@@ -1,3 +1,16 @@
+> [!WARNING]
+> ## Deprecated
+>
+> This package is **no longer maintained**.
+>
+> It was originally a fork of [`react-intl-tel-input`](https://github.com/patw0929/react-intl-tel-input)  
+> (a wrapper around [`intl-tel-input`](https://github.com/jackocnr/intl-tel-input)).
+>
+> Please migrate to the official **React binding** provided by  
+> [`intl-tel-input`](https://github.com/jackocnr/intl-tel-input) instead.
+>
+> 👉 Recommended replacement: `intl-tel-input/react`
+
 # React-Intl-Tel-Input
 
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
